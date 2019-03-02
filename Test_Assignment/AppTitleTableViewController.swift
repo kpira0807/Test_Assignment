@@ -36,6 +36,8 @@ class AppTitleTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.loadPerson()
+        tableView.dataSource = self
+        tableView.delegate = self
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

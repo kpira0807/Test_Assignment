@@ -30,14 +30,16 @@ class ScreenTitleViewController: UIViewController {
         callButton.layer.borderWidth = 1
         callButton.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         callButton.layer.masksToBounds = true
-        
+
         guard let personlist = personlist else { return }
         firstnameScreen.text = personlist.name.capitalized
         lastnameScreen.text = personlist.lastName.capitalized
         genderScreen.text = personlist.gender.capitalized
-        birthScreen.text = personlist.date
-        
-        
+        if let range = personlist.date.range(of: "T") {
+            let firstPart = personlist.date[(personlist.date.startIndex)..<range.lowerBound]
+            birthScreen.text = String(firstPart)
+        }
+
         phoneScreen.text = personlist.phone
         if let imageURL = URL(string: personlist.picture) {
             DispatchQueue.global().async {
