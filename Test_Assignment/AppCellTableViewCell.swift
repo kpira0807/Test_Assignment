@@ -7,7 +7,6 @@ struct PersonViewModel {
     var phone: String
     var date: String
     var picture: String
-
     
     init(with personModel: Person){
         name = personModel.name.first
@@ -35,5 +34,4 @@ class AppCellTableViewCell: UITableViewCell {
         firstNameLabel.text = "First name: \(personModel.name)"
         lastNameLabel.text = "Last name: \(personModel.lastName)"
     }
-
 }

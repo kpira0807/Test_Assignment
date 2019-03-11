@@ -1,24 +1,28 @@
 import UIKit
 import Alamofire
 
-class AppTitleTableViewController: UITableViewController {
+class AppTitleTableViewController: UITableViewController  {
     
     private var personList: [PersonViewModel] = []
     let personeService = Service.shared
+    private var pageNumber: Int = 0 // for pagination with JSON more then 1 pages
+    private var isLoading = false
     
     @IBOutlet weak var activityIndecator: UIActivityIndicatorView!
     
-    private func loadPerson() {
+    private func loadPerson(with page: Int) {
         activityIndecator.startAnimating()
-        personeService.personList(completed: { [weak self] people in
+        personeService.personList(page: page, completed: { [weak self] people in
             guard let strongSelf = self else { return }
-            strongSelf.personList = people.filter{ peoples -> Bool in
+            let persons = people.filter{ peoples -> Bool in
                 if peoples.name != nil {
                     return true
                 }
                 return false
                 }.map{ PersonViewModel(with: $0) }
+            strongSelf.personList.append(contentsOf: persons)
             strongSelf.tableView.reloadData()
+            strongSelf.isLoading = false
             self!.activityIndecator.stopAnimating()
             }, failed: {
                 self.showError(with: ErrorType.loading)
@@ -35,9 +39,16 @@ class AppTitleTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.loadPerson()
+        loadPerson(with: pageNumber)
         tableView.dataSource = self
         tableView.delegate = self
+    }
+    
+    private func loadMore() {
+        guard !isLoading else { return }
+        isLoading = true
+        pageNumber += 1
+        loadPerson(with: pageNumber)
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -48,6 +59,10 @@ class AppTitleTableViewController: UITableViewController {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as? AppCellTableViewCell
             else {
                 return UITableViewCell()
+        }
+        
+        if indexPath.row == personList.count - 1 {
+            loadMore()
         }
         
         let personModel = personList[indexPath.row]
@@ -78,6 +93,7 @@ class AppTitleTableViewController: UITableViewController {
             }
         }
     }
+    
     // Edit для удаления и перемены местами cell
     @IBAction func editButton(_ sender: Any) {
         isEditing = !isEditing

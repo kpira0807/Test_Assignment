@@ -13,24 +13,22 @@ class ScreenTitleViewController: UIViewController {
     @IBOutlet weak var backButton: UIBarButtonItem!
     
     @IBAction func backButton(_ sender: Any) {
-        let AppTitleTableViewController = self.storyboard?.instantiateViewController(withIdentifier: "AppTitleTableViewController") as! AppTitleTableViewController
-        
-        self.present(AppTitleTableViewController, animated: true)
+        navigationController?.popViewController(animated: true)
     }
     
     var personlist: PersonViewModel?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        // round image
         imageScreen.layer.cornerRadius = imageScreen.frame.size.width / 2
         imageScreen.clipsToBounds = true
-        
+        // button style
         callButton.layer.cornerRadius = 10
         callButton.layer.borderWidth = 1
         callButton.layer.borderColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
         callButton.layer.masksToBounds = true
-
+        // capitalized - first capital letter
         guard let personlist = personlist else { return }
         firstnameScreen.text = personlist.name.capitalized
         lastnameScreen.text = personlist.lastName.capitalized
@@ -39,7 +37,7 @@ class ScreenTitleViewController: UIViewController {
             let firstPart = personlist.date[(personlist.date.startIndex)..<range.lowerBound]
             birthScreen.text = String(firstPart)
         }
-
+        // Take photo for cell
         phoneScreen.text = personlist.phone
         if let imageURL = URL(string: personlist.picture) {
             DispatchQueue.global().async {
@@ -53,7 +51,7 @@ class ScreenTitleViewController: UIViewController {
             }
         }
     }
-    
+    // Call button
     @IBAction func callButton(_ sender: UIButton) {
         if let url = URL(string: "tel://\(self.phoneScreen.text ?? "")") {
             UIApplication.shared.open(url as URL, options: [:], completionHandler: nil)

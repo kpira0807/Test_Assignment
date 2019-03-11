@@ -12,7 +12,6 @@ struct Person: Decodable {
     let dob: BirthdayInfo
     let picture: Picture
     
-    
     init(from decoder: Decoder) throws{
         let container = try decoder.container(keyedBy: CodingKeys.self)
         gender = try container.decode(String.self, forKey: .gender)
@@ -44,8 +43,8 @@ class Service {
         let results: [Person]
     }
     
-    func personList(completed: @escaping ([Person]) -> Void, failed: @escaping() -> Void) {
-        AF.request("https://randomuser.me/api/?page=3&results=10").responseDecodable { (response: DataResponse<Box>) in
+    func personList(page: Int, completed: @escaping ([Person]) -> Void, failed: @escaping() -> Void) {
+        AF.request("https://randomuser.me/api/?page=\(page)&results=30").responseDecodable { (response: DataResponse<Box>) in
             switch response.result {
             case .success(let value):
                 completed(value.results)
